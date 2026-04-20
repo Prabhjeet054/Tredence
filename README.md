@@ -65,14 +65,14 @@ Start command is defined by the image (`node backend/dist/index.js`). You can al
 ### Frontend (static app) service
 
 1. **Settings → Build**: builder **Dockerfile**, Dockerfile path **`frontend/Dockerfile`**. Root directory **`.`** (repository root).
-2. **Variables** for **build time** (required): set **`VITE_API_BASE_URL`** to your backend’s public API base, e.g. `https://your-api.up.railway.app/api`. Railway injects service variables into the Docker build so Vite can bake the correct URL into the bundle.
+2. **Variables** for **build time** (required): set **`VITE_API_BASE_URL`** to your backend **origin only** (no `/api` path), e.g. `https://your-api.up.railway.app`. The frontend always requests `${origin}/api/...`, matching Express. A legacy value ending in `/api` is normalized automatically.
 3. The production image serves the SPA with **`serve`** and listens on **`PORT`** (Railway assigns this).
 
 Local Docker smoke tests from repo root:
 
 ```bash
 docker build -f backend/Dockerfile -t hr-api .
-docker build -f frontend/Dockerfile --build-arg VITE_API_BASE_URL=http://localhost:4000/api -t hr-ui .
+docker build -f frontend/Dockerfile --build-arg VITE_API_BASE_URL=http://localhost:4000 -t hr-ui .
 ```
 
 ### Vercel (and similar hosts)

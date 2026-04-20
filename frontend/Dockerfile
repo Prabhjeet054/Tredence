@@ -7,8 +7,8 @@ COPY frontend/package.json ./frontend/
 RUN pnpm install --frozen-lockfile --filter frontend
 COPY frontend ./frontend
 
-# Set at build time in Railway: VITE_API_BASE_URL=https://<your-api>.up.railway.app/api
-ARG VITE_API_BASE_URL=http://localhost:4000/api
+# Set at build time: backend origin only, e.g. https://<your-api>.up.railway.app (no /api suffix required)
+ARG VITE_API_BASE_URL=http://localhost:4000
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 
 RUN pnpm --filter frontend build
