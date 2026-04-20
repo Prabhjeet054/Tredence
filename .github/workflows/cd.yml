@@ -1,0 +1,25 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image (backend)
+        run: docker build -f backend/Dockerfile -t hr-workflow-backend .
+
+      - name: Build Docker image (frontend)
+        run: docker build -f frontend/Dockerfile -t hr-workflow-frontend .
+
+      - name: Deploy complete
+        run: echo "Deployment pipeline complete. Add your deploy target steps here."
