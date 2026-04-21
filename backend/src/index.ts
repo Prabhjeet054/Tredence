@@ -16,9 +16,26 @@ const PORT = Number(process.env.PORT) || 4000;
 
 app.set('trust proxy', 1);
 
-const corsOrigins = process.env.FRONTEND_URLS
-  ? process.env.FRONTEND_URLS.split(',').map(s => s.trim()).filter(Boolean)
-  : [process.env.FRONTEND_URL || 'http://localhost:5173'];
+/** Deployed SPA on Railway — always allowed alongside env-based origins. */
+const PUBLIC_FRONTEND_ORIGIN = 'https://frontend-production-ca54.up.railway.app';
+
+function buildCorsOrigins(): string[] {
+  const origins = new Set<string>(['http://localhost:5173', PUBLIC_FRONTEND_ORIGIN]);
+
+  const single = process.env.FRONTEND_URL?.trim();
+  if (single) origins.add(single);
+
+  if (process.env.FRONTEND_URLS) {
+    process.env.FRONTEND_URLS.split(',').forEach(s => {
+      const t = s.trim();
+      if (t) origins.add(t);
+    });
+  }
+
+  return [...origins];
+}
+
+const corsOrigins = buildCorsOrigins();
 
 app.use(helmet());
 app.use(cors({ origin: corsOrigins.length === 1 ? corsOrigins[0] : corsOrigins }));
